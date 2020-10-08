@@ -79,7 +79,7 @@ class ContainerYard(gym.Env):
 
         """
 
-        self.observation_space = spaces.Box(low=-1, high=255, shape=(50+10+2,), dtype=np.float_)
+        self.observation_space = spaces.Box(low=-1, high=255, shape=(50+5+2,), dtype=np.float_)
 
 
     def _loadStack(self, path):
@@ -109,7 +109,8 @@ class ContainerYard(gym.Env):
         mStep = self.max_step/self.max_step
         obs = np.insert(obs, obs.size, [cStep, mStep])
         
-        
+        #self.state.render()
+
         return obs
     
     def _take_action(self, action):
@@ -154,11 +155,6 @@ class ContainerYard(gym.Env):
         if ret is False:
             #Could not make action, so we punish it.
             reward = -1
-
-        if done is True:
-            if self.state.isDone():
-                reward += 1
-            reward += self.max_step - self.current_step
     
 
         ##################
@@ -199,7 +195,8 @@ class ContainerYard(gym.Env):
             while self.state.isDone():
                 currentFile = self.fileStack.pop()
                 self.state = Yard(open(currentFile))
-            self.layout = read_file(currentFile, 5)
+
+            self.layout = read_file(currentFile, self.state.y)
             self.max_step = greedy_solve(self.layout)
 
         self.current_step = 0

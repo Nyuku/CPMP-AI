@@ -14,7 +14,7 @@ class Yard():
         yardInfo = os.path.basename(file.name).split("_")
         self.x,self.y = int(yardInfo[1]), int(yardInfo[2])
         #print(yardInfo)
-        self.opt = int(yardInfo[3])
+        #self.opt = int(yardInfo[3])
 
         self.state = np.zeros(shape=(self.x,self.y), dtype=np.int)
 
