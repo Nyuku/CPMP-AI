@@ -12,7 +12,7 @@ import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 
-FILE_PATH = "/media/ndhdd/Programming/Internship/CPMP/genProblems" + os.sep
+FILE_PATH = "/home/naku/Programming/Internship/cpmp" + os.sep
 
 class ContainerYard(gym.Env):
     metadata = {'render.modes':['human']}
@@ -52,6 +52,7 @@ class ContainerYard(gym.Env):
 
         ############################
         self.current_step = 0
+        self.last_reward = 0
 
         #Memory Buffer
         self.pastReward = 0 #Last Reward
@@ -125,6 +126,8 @@ class ContainerYard(gym.Env):
 
         yardCopy = Layout(layoutState, self.state.y)
 
+        print(self.max_step)
+
         dest = select_destination_stack(
             yardCopy, 
             self.lastAction
@@ -134,21 +137,25 @@ class ContainerYard(gym.Env):
 
 
     def step(self, action):
-        #actionArray = np.copy(self.actions[action])
-        #action = np.copy(actionArray)
-        pastSort = self.state.getAllSorts()
-        pastTop = self.state.getAllTops()
         #Saving past info
         self.pastAction = np.copy(self.lastAction)
         #Taking Action!
         ret = self._take_action(action)
+
+        #New Greedy Value.
+        self.max_step = greedy_solve(self.layout)
         #temporary for DQN
         action = self.lastAction
 
-
         self.current_step += 1
 
-        reward = np.exp(-(self.current_step + self.max_step))
+
+
+        formula_reward = np.exp(-(self.current_step + self.max_step))
+
+        reward = formula_reward - self.last_reward
+
+        self.last_reward = formula_reward
 
         done = (self.state.isDone() or self.max_step == self.current_step)
 
