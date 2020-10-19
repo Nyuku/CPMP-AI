@@ -80,7 +80,7 @@ class ContainerYard(gym.Env):
 
         """
 
-        self.observation_space = spaces.Box(low=-1, high=255, shape=(50+5+2,), dtype=np.float_)
+        self.observation_space = spaces.Box(low=-1, high=255, shape=(self.state.x*self.state.y + self.state.x + 2 ,), dtype=np.float_)
 
 
     def _loadStack(self, path):
@@ -117,12 +117,14 @@ class ContainerYard(gym.Env):
     def _take_action(self, action):
         #self.lastAction = np.copy(action)
         self.lastAction = action
-        layoutState = []
-        for stack in self.state.state:
-            s = stack[np.nonzero(stack)]
-            if s.size <= 0:
-                s = np.array([0])
-            layoutState.append(s)
+        #layoutState = []
+        #for stack in self.state.state:
+        #    s = stack[np.nonzero(stack)]
+        #    if s.size <= 0:
+        #        s = np.array([0])
+        #    layoutState.append(s)
+
+        layoutState = self.state.asLayout()
 
         yardCopy = Layout(layoutState, self.state.y)
 
@@ -143,12 +145,13 @@ class ContainerYard(gym.Env):
         ret = self._take_action(action)
 
         #New Greedy Value.
-        self.max_step = greedy_solve(self.layout)
+        self.max_step = greedy_solve(
+            Layout(self.state.asLayout(), self.state.y)
+        )
         #temporary for DQN
         action = self.lastAction
 
         self.current_step += 1
-
 
 
         formula_reward = np.exp(-(self.current_step + self.max_step))

@@ -19,7 +19,7 @@ from stable_baselines import DQN
 
 from containeryard.containeryard import ContainerYard
 
-timesteps = 100000
+timesteps = 1000000
 
 env = DummyVecEnv([lambda: ContainerYard(showDebug = True, training=True)])
 #env = SubprocVecEnv([lambda : Monitor(ContainerYard(showDebug = True, training = True) for _ in range(cpu) )])

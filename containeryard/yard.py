@@ -115,6 +115,15 @@ class Yard():
                 return False
         return True
 
+    def asLayout(self):
+        layoutState = []
+        for stack in self.state:
+            s = stack[np.nonzero(stack)]
+            if s.size <= 0:
+                s = np.array([0])
+            layoutState.append(s)
+
+        return layoutState
 
 
 
