@@ -3,18 +3,9 @@ import json
 import datetime as dt
 import numpy as np
 
-
-#PPO2 shit
-from stable_baselines.common.policies import MlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
-from stable_baselines.common.vec_env import SubprocVecEnv 
-
-from stable_baselines import PPO2
-
-#DQN Shit
-#from stable_baselines.common.vec_env import DummyVecEnv
-#from stable_baselines.deepq.policies import MlpPolicy
-#from stable_baselines import DQN
+from stable_baselines.deepq.policies import MlpPolicy
+from stable_baselines import DQN
 
 
 from containeryard.containeryard import ContainerYard
@@ -22,20 +13,16 @@ from containeryard.containeryard import ContainerYard
 timesteps = 100000
 
 env = DummyVecEnv([lambda: ContainerYard(showDebug = True, training=True)])
-#env = SubprocVecEnv([lambda : Monitor(ContainerYard(showDebug = True, training = True) for _ in range(cpu) )])
-#model = PPO2(MlpPolicy, env, verbose=1) #PPO2
-#model = DQN(MlpPolicy, env, verbose=1)
+model = DQN(MlpPolicy, env, verbose=1)
 
-#model.learn(total_timesteps=timesteps)
-#model.save("TrainingTest-" + str(timesteps))
+model.learn(total_timesteps=timesteps)
+model.save("TrainingTest-" + str(timesteps))
 
-#del model
-#del env
+del model
+del env
 
-#env = SubprocVecEnv([lambda : Monitor(ContainerYard(showDebug = True, training = False) for _ in range(cpu) )])
 env = DummyVecEnv([lambda: ContainerYard(showDebug = True, training=False)])
-model = PPO2.load("TrainingTest-" + str(timesteps), env=env)
-#model = DQN.load("TrainingTest-" + str(timesteps), env=env)
+model = DQN.load("TrainingTest-" + str(timesteps), env=env)
 
 finished = 0
 total = 0
