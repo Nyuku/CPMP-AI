@@ -80,7 +80,7 @@ class Yard():
         return np.asarray(self.state).reshape(-1)
 
     def getAsObservation(self):
-        stateCopy = np.array(self.state, copy=True)
+        stateCopy = np.array(self.state, copy=True, dtype=np.float)
 
         return np.concatenate( (stateCopy[np.nonzero(stateCopy)],stateCopy[np.nonzero(stateCopy == 0)]))
 
@@ -118,10 +118,10 @@ class Yard():
     def asLayout(self):
         layoutState = []
         for stack in self.state:
-            s = stack[np.nonzero(stack)]
+            s = stack[np.nonzero(stack)] # Get the non zero values
             if s.size <= 0:
                 s = np.array([0])
-            layoutState.append(s)
+            layoutState.append(s.tolist())
 
         return layoutState
 
