@@ -18,7 +18,7 @@ class ContainerYard(gym.Env):
 
     state : Yard
     showDebug : bool
-    max_stel : int
+    max_step : int
     training : bool
     fileStack : list
     current_step : int
@@ -76,8 +76,8 @@ class ContainerYard(gym.Env):
             obs = np.insert(obs, obs.size, 1 if self.state.isSorted(i) is True else 0)
         
         #Normalizated Values
-        cStep = (self.current_step)/(self.max_step)
-        mStep = (self.max_step)/(self.max_step)
+        cStep = self.current_step/self.max_step
+        mStep = 1 #(self.max_step)/(self.max_step) # -> Always 1 anyways.
         obs = np.insert(obs, obs.size, [cStep, mStep])
         
         #self.state.render()
@@ -105,11 +105,8 @@ class ContainerYard(gym.Env):
 
         self.current_step += 1
 
-
         formula_reward = np.exp(-(self.current_step + self.greedy_steps))
-
         reward = formula_reward - self.last_reward
-
         self.last_reward = formula_reward
 
         done = (self.state.isDone() or self.current_step >= self.max_step)
@@ -125,6 +122,7 @@ class ContainerYard(gym.Env):
         if self.showDebug is True:
             info ={
                 "current_step" : self.current_step,
+                "max_step" : self.max_step,
                 "reward" : reward,
                 "current_action" : action,
                 "action_status" : str(ret),
