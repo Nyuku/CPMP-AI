@@ -10,7 +10,7 @@ from stable_baselines import DQN
 
 from containeryard.containeryard import ContainerYard
 
-timesteps = 10000
+timesteps = 100000
 
 env = DummyVecEnv([lambda: ContainerYard(showDebug = True, training=True)])
 model = DQN(MlpPolicy, env, verbose=1)
@@ -85,7 +85,10 @@ for i_episode in range(1000):
 if info is not None:
     print("== FINISH DATA ==")
     print("Acc : ", finished, "/1000", "(", (finished/1000)*100,")%")
-    print("Average current_step and max_step differences: ", (solvedDifferences/finished))
+    if finished == 0:
+        print("NO TESTS WERE FINISHED.")
+    else:
+        print("Average current_step and max_step differences: ", (solvedDifferences/finished))
 
 
 env.close()

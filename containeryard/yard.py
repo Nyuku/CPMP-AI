@@ -1,20 +1,20 @@
+import os
 import numpy as np
 import random as rand
-import os
 
 class Yard():
+    x:int
+    y:int
+
+    max:int
+    min:int
+
+    numTranslation:dict
+
     def __init__(self, file, fromFile = True):
-        #From the file name, we set the size.
-
-        ####    Loads the Yard    ####
-        #if "optimo" in os.path.basename(file.name):
-        #    return False
-
         #Gets file yard size from file name.
         yardInfo = os.path.basename(file.name).split("_")
         self.x,self.y = int(yardInfo[1]), int(yardInfo[2])
-        #print(yardInfo)
-        #self.opt = int(yardInfo[3])
 
         self.state = np.zeros(shape=(self.x,self.y), dtype=np.int)
 
@@ -33,13 +33,26 @@ class Yard():
         self.max = np.amax(self.state)
         self.min = np.amin(self.state)
 
-    def getTop(self,i):
+        #Creates the dictionary to translate to smaller numbers.
+        allNumbers = np.unique(self.state)
+        self.numTranslation = dict()
+        for i in range(allNumbers.size):
+            #The value, but normalized.
+            if allNumbers[i] == 0:
+                #Zero will be one.
+                self.numTranslation[allNumbers[i]] = 1.0
+            else:
+                self.numTranslation[allNumbers[i]] = ((i-1)/((allNumbers.size-1)-1)) 
+        ####
+
+
+    def getTop(self, i):
         for pos in range(self.y-1, -1, -1):
             if self.state[i][pos] > 0:
                 return self.state[i][pos]
         return 0
 
-    def isSorted(self, i, zeroCounts=True):
+    def isSorted(self, i):
         lastNum = 999999
         for num in np.array(self.state[i]):
             if num == 0:
@@ -82,7 +95,11 @@ class Yard():
     def getAsObservation(self):
         stateCopy = np.array(self.state, copy=True, dtype=np.float)
 
-        return np.concatenate( (stateCopy[np.nonzero(stateCopy)],stateCopy[np.nonzero(stateCopy == 0)]))
+        obs = np.concatenate( (stateCopy[np.nonzero(stateCopy)],stateCopy[np.nonzero(stateCopy == 0)]))
+        for i in range(obs.size):
+            obs[i] = self.numTranslation[obs[i]]
+
+        return obs
 
     def render(self):
         rend = np.rot90(self.state, k=1)

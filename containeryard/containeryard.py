@@ -65,10 +65,12 @@ class ContainerYard(gym.Env):
         
         #Normalization and Generating the Yard Observation
         obs = self.state.getAsObservation()
-        obsMax = self.state.max
-        obsMin = self.state.min
-        for i in range(len(obs)):
-            obs[i] = (obs[i]-obsMin)/(obsMax-obsMin)
+        
+        ### OLD OBSERVATION ###
+        #obsMax = self.state.max
+        #obsMin = self.state.min
+        #for i in range(len(obs)):
+        #    obs[i] = (obs[i]-obsMin)/(obsMax-obsMin)
 
         
         #Misc Observation
