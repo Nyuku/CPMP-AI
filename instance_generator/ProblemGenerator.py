@@ -29,7 +29,8 @@ rootFolder = "/media/ndhdd/Programming/Internship/CPMP/genProblems"
     x = 6; y = 4
 """
 x=int(sys.argv[1]) #20
-y=5
+y=int(sys.argv[2]) #5
+
 max_containers = (x*(y-2)) #60
 
 max_priority=20

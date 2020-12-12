@@ -22,9 +22,8 @@ rootFolder = "/media/ndhdd/Programming/Internship/CPMP/genProblems"
     n n n n n n n 
     x = 7; y = 4
 """
-x=10
-y=5
-
+x=int(sys.argv[1]) #20
+y=int(sys.argv[2]) #5
 
 """
     min, max
