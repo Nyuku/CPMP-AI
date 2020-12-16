@@ -94,8 +94,20 @@ class Yard():
 
     def getAsObservation(self):
         stateCopy = np.array(self.state, copy=True, dtype=np.float)
+        obs = np.zeros(stateCopy.shape)
 
-        obs = np.concatenate( (stateCopy[np.nonzero(stateCopy)],stateCopy[np.nonzero(stateCopy == 0)]))
+        x,y = stateCopy.shape
+        for i in range(x):
+            parcialObs = np.concatenate((
+                stateCopy[i][np.nonzero(stateCopy[i]==0)], ## Dejamos los ceros abajo
+                stateCopy[i][np.nonzero(stateCopy[i])] ## y arriba los numeros.
+                ))
+
+            obs[i] = np.array(parcialObs, copy=True, dtype=np.float)
+
+        obs = np.rot90(obs)
+        obs = np.asarray(obs).ravel()
+
         for i in range(obs.size):
             obs[i] = self.numTranslation[obs[i]]
 
