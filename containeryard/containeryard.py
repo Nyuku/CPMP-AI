@@ -50,7 +50,7 @@ class ContainerYard(gym.Env):
 
         self.action_space = spaces.Discrete(self.state.x)
 
-        self.observation_space = spaces.Box(low=-1, high=255, shape=(self.state.x*self.state.y + self.state.x + 2 ,), dtype=np.float_)
+        self.observation_space = spaces.Box(low=-1, high=255, shape=(self.state.x*self.state.y + self.state.x ,), dtype=np.float_)
 
 
     def _loadStack(self, path):
@@ -77,11 +77,7 @@ class ContainerYard(gym.Env):
         for i in range(self.state.x):
             obs = np.insert(obs, obs.size, 1 if self.state.isSorted(i) is True else 0)
         
-        #Normalizated Values
-        cStep = self.current_step/self.max_step
-        mStep = 1 #(self.max_step)/(self.max_step) # -> Always 1 anyways.
-        obs = np.insert(obs, obs.size, [cStep, mStep])
-        
+    
         #self.state.render()
         return obs
     
