@@ -130,25 +130,45 @@ class ContainerYard(gym.Env):
     def reset(self):
  
         #Creating the containerYard#
-        if len(self.fileStack) <= 0:
-            if self.training:
-                path = "training" + os.sep
-            else:
-                path = "testing" + os.sep
+        #Old Reset Function
+        """
+            if len(self.fileStack) <= 0:
+                if self.training:
+                    path = "training" + os.sep
+                else:
+                    path = "testing" + os.sep
 
-            self._loadStack(path)
+                self._loadStack(path)
 
-        currentFile = self.fileStack.pop()
-        self.state = Yard(open(currentFile))
-        while self.state.isDone():
             currentFile = self.fileStack.pop()
             self.state = Yard(open(currentFile))
+            while self.state.isDone():
+                currentFile = self.fileStack.pop()
+                self.state = Yard(open(currentFile))
 
-        self.layout = read_file(currentFile, self.state.y)
-        self.max_step = greedy_solve(self.layout)
-        self.greedy_steps = self.max_step
+            self.layout = read_file(currentFile, self.state.y)
+            self.max_step = greedy_solve(self.layout)
+            self.greedy_steps = self.max_step
 
-        self.current_step = 0
+            self.current_step = 0
+        """
+        # New Reset
+        three = np.random.randint(1,high=15, size=(3,5))
+        twoo = np.zeros(shape=(2,5))
+        rest = np.zeros(shape=(5,5))
+
+        for i in range(5):
+            for j in range(5-3): # Max is 5 - 3
+                num = rand.randint(-4,15) #Has more chance of being 0 than a number :D
+                rest[i][j] = num
+                if num < 0:
+                    rest[i][j] = 0
+                    break
+        
+        yard = np.concatenate((three, twoo, rest))
+        np.random.shuffle(yard)
+
+        self.state = Yard(yard, fromFile=False)
 
         return self._next_observation()
 

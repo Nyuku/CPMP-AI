@@ -10,7 +10,7 @@ from stable_baselines import DQN
 
 from containeryard.containeryard import ContainerYard
 
-timesteps = 100000
+timesteps = 100
 
 env = DummyVecEnv([lambda: ContainerYard(showDebug = True, training=True)])
 model = DQN(MlpPolicy, env, verbose=1)
