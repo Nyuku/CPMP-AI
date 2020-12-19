@@ -103,7 +103,8 @@ class ContainerYard(gym.Env):
 
         if ret is False:
             #Could not make action, so we punish it.
-            reward = -1
+            reward = -100
+            done = True
     
 
         ##################
@@ -112,6 +113,7 @@ class ContainerYard(gym.Env):
         if self.showDebug is True:
             info ={
                 "current_step" : self.current_step,
+                "greedy_steps" : self.greedy_steps,
                 "max_step" : self.max_step,
                 "reward" : reward,
                 "current_action" : action,
@@ -152,6 +154,7 @@ class ContainerYard(gym.Env):
 
             self.current_step = 0
         """
+        self.current_step = 0
         # New Reset
         three = np.random.randint(1,high=15, size=(3,5))
         twoo = np.zeros(shape=(2,5))
@@ -161,7 +164,7 @@ class ContainerYard(gym.Env):
             for j in range(5-3): # Max is 5 - 3
                 num = rand.randint(-4,15) #Has more chance of being 0 than a number :D
                 rest[i][j] = num
-                if num < 0:
+                if num <= 0:
                     rest[i][j] = 0
                     break
         
@@ -169,8 +172,13 @@ class ContainerYard(gym.Env):
         np.random.shuffle(yard)
 
         self.state = Yard(yard, fromFile=False)
+        
+        layoutState = self.state.asLayout()
+        self.layout = Layout(layoutState, self.state.y)
+        self.max_step = greedy_solve(self.layout)
+
 
         return self._next_observation()
 
-    def render(self, test=False):
+    def render(self, mode=None, test=False):
         self.state.render()

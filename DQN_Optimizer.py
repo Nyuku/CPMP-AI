@@ -10,19 +10,19 @@ from stable_baselines import DQN
 
 from containeryard.containeryard import ContainerYard
 
-timesteps = 100
+timesteps = 1000
 
 env = DummyVecEnv([lambda: ContainerYard(showDebug = True, training=True)])
 model = DQN(MlpPolicy, env, verbose=1)
 
 model.learn(total_timesteps=timesteps)
-model.save("TrainingTest-" + str(timesteps))
+#model.save("TrainingTest-" + str(timesteps))
 
-del model
-del env
+#del model
+#del env
 
-env = DummyVecEnv([lambda: ContainerYard(showDebug = True, training=False)])
-model = DQN.load("TrainingTest-" + str(timesteps), env=env)
+#env = DummyVecEnv([lambda: ContainerYard(showDebug = True, training=False)])
+#model = DQN.load("TrainingTest-" + str(timesteps), env=env)
 
 finished = 0
 total = 0
@@ -35,7 +35,7 @@ bestSolution = -1
 solvedDifferences = 0
 
 
-for i_episode in range(1000):
+for i_episode in range(5):
     obs = env.reset()
     t = 0
 
@@ -53,7 +53,7 @@ for i_episode in range(1000):
         if info is not None:
             print()
             print("=== DEBUG INFO ===")
-            print("Step: ", info[0]["current_step"])
+            print("Step: {0}/{1}".format(info[0]["current_step"],info[0]["max_step"]))
             print("Reward: ", info[0]["reward"])
             print("==== ACT INFO ====")
             print("Action @ ", info[0]['current_action'])
