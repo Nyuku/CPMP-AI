@@ -3,7 +3,7 @@ import numpy as np
 from containeryard.containeryard import ContainerYard
 
 #yard = Yard(open("/home/naku/Programming/Internship/cpmp/BF/BF1/cpmp_16_5_48_10_29_10.bay","r"))
-yard = ContainerYard(training = False)
+yard = ContainerYard(showDebug=True, x=5, y=5)
 
 #Variables xd
 step = 0

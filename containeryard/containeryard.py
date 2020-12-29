@@ -108,7 +108,7 @@ class ContainerYard(gym.Env):
         if ret is False:
             #Could not make action, so we punish it.
             reward = -100
-            done = True
+            #done = True
     
 
         ##################
