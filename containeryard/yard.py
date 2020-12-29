@@ -137,8 +137,9 @@ class Yard():
         for stack in self.state:
             s = stack[np.nonzero(stack)] # Get the non zero values
             if s.size <= 0:
-                s = np.array([0])
-            layoutState.append(s.tolist())
+                layoutState.append([])
+            else:
+                layoutState.append(s.tolist())
 
         return layoutState
 

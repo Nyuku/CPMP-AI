@@ -84,6 +84,7 @@ class ContainerYard(gym.Env):
             Layout(layoutState, self.state.y), 
             action
         )
+        
         return self.state.moveStack(action, dest)
 
 
