@@ -139,6 +139,7 @@ class ContainerYard(gym.Env):
 
 
         self.state, self.layout, self.max_step = RandomMovementGeneration(x=self.x, y=self.y, difficulty=4)
+        self.last_reward = np.exp(-self.greedy_steps)
 
         return self._next_observation()
 
