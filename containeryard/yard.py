@@ -11,26 +11,10 @@ class Yard():
 
     numTranslation:dict
 
-    def __init__(self, file, fromFile = True):
+    def __init__(self, yard):
         #Gets file yard size from file name.
-        if fromFile:
-            yardInfo = os.path.basename(file.name).split("_")
-            self.x,self.y = int(yardInfo[1]), int(yardInfo[2])
-
-            self.state = np.zeros(shape=(self.x,self.y), dtype=np.int)
-
-            #Loads the data from the file.
-            lines = file.readlines()
-            for i in range(len(lines)):
-                pos = 0
-                #Preparing the line reading.
-                for num in lines[i].replace("\n","").split(" "):
-                    if num.isdigit():
-                        self.state[i][pos] = int(num)
-                        pos = pos + 1
-        else:
-            self.x, self.y = file.shape # Should Be Numpy
-            self.state = file
+        self.x, self.y = yard.shape # Should Be Numpy
+        self.state = yard
 
         #######END#####################
 
