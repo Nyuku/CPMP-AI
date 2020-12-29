@@ -3,13 +3,13 @@ import numpy as np
 import random as rand
 
 class Yard():
-    x:int
-    y:int
+    #x:int
+    #y:int
 
-    max:int
-    min:int
+    #max:int
+    #min:int
 
-    numTranslation:dict
+    #numTranslation:dict
 
     def __init__(self, yard):
         #Gets file yard size from file name.

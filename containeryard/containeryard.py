@@ -17,15 +17,15 @@ from gym.utils import seeding
 class ContainerYard(gym.Env):
     metadata = {'render.modes':['human']}
 
-    state : Yard
-    showDebug : bool
-    max_step : int
-    training : bool
-    fileStack : list
-    current_step : int
-    last_reward : int
-    x: int
-    y: int
+    #state : Yard
+    #showDebug : bool
+    #max_step : int
+    #training : bool
+    #fileStack : list
+    #current_step : int
+    #last_reward : int
+    #x: int
+    #y: int
 
     def __init__(self, showDebug = False, x=20, y=5):
         super(ContainerYard, self).__init__()
