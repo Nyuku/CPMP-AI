@@ -70,9 +70,12 @@ def RandomMovementGeneration(x=20, y=5, difficulty=0): # 0 is easy, 1 is normal,
     elif difficulty == 2:
         min_moves = 10
         max_moves = 16
-    else:
+    elif difficulty == 3:
         min_moves = 16
         max_moves = 23
+    else:
+        min_moves = 23
+        max_moves = 35
 
     moves = rand.randint(min_moves ,max_moves)
 
