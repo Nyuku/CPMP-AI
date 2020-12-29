@@ -10,13 +10,13 @@ from stable_baselines import DQN
 
 from containeryard.containeryard import ContainerYard
 
-timesteps = 100000
+timesteps = 10000000
 
 env = DummyVecEnv([lambda: ContainerYard(showDebug = True)])
 model = DQN(MlpPolicy, env, verbose=1)
 
 model.learn(total_timesteps=timesteps)
-#model.save("TrainingTest-" + str(timesteps))
+model.save("TrainingTest-" + str(timesteps))
 
 #del model
 #del env
