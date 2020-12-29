@@ -107,7 +107,7 @@ class ContainerYard(gym.Env):
 
         if ret is False:
             #Could not make action, so we punish it.
-            reward = -100
+            reward = -1
             #done = True
     
 
@@ -144,3 +144,5 @@ class ContainerYard(gym.Env):
 
     def render(self, mode=None, test=False):
         self.state.render()
+
+
