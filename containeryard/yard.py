@@ -30,7 +30,7 @@ class Yard():
                 #Zero will be one.
                 self.numTranslation[allNumbers[i]] = 1.0
             else:
-                self.numTranslation[allNumbers[i]] = ((i-1)/((allNumbers.size-1)-1)) 
+                self.numTranslation[allNumbers[i]] = ((i)/((allNumbers.size-1))) 
         ####
 
 

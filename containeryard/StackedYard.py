@@ -1,5 +1,8 @@
 class Layout:
     def __init__(self, stacks, H):
+        for s in range(len(stacks)):
+            stacks[s] = [i for i in stacks[s] if i != 0]
+
         self.stacks = stacks
         self.sorted_elements = []
         self.sorted_stack = []
@@ -112,40 +115,44 @@ def read_file(file, H):
         layout = Layout(stacks,H)
     return layout
 
-def select_destination_stack(layout, orig):
+def select_destination_stack(layout, orig, black_list=[], max_pos=100, rank=[]):
     s_o = layout.stacks[orig]
+    if len(s_o) == 0: return None
     c = s_o[-1]
-    best_eval=-1000000
-    best_dest=-1
-    dest=-1
+    best_eval=-1000000;
+    best_dest=None
+    dest=-1;
 
     for dest in range(len(layout.stacks)):
-        if orig==dest: 
-            continue
-        s_d = layout.stacks[dest]
+            if orig==dest or dest in black_list: continue
+            s_d = layout.stacks[dest]
 
-        if layout.H == len(s_d):
-            continue
-        top_d=gvalue(s_d)
+            if(layout.H == len(s_d)): continue
+            top_d=gvalue(s_d)
 
-        ev=0
+            ev=0
 
-        if layout.is_sorted_stack(dest) and c<=top_d:
-            #c can be well-placed: the sorted stack minimizing top_d is preferred.
-            ev = 10000 - 100*top_d
-        elif not layout.is_sorted_stack(dest) and c>=top_d:
-            #unsorted stack with c>=top_d maximizing top_d is preferred
-            ev = top_d
-        elif layout.is_sorted_stack(dest):
-            #sorted with minimal top_d
-            ev = -100 - top_d
-        else:
-            #unsorted with minimal numer of auxiliary stacks
-            ev = -10000 #+ required_stacks(dest)
+            if layout.is_sorted_stack(dest) and c<=top_d:
+              #c can be well-placed: the sorted stack minimizing top_d is preferred.
+              ev = 100000 - 100*top_d
+            elif not layout.is_sorted_stack(dest) and c>=top_d:
+              #unsorted stack with c>=top_d maximizing top_d is preferred
+              ev = top_d
+            elif layout.is_sorted_stack(dest):
+              #sorted with minimal top_d
+              ev = -100 - len(s_d) #- top_d
+            else:
+              #unsorted with minimal numer of auxiliary stacks
+              ev = -10000  
+              #penaliza en caso de que haya un elemento rank debajo
+              if top_d in rank: ev -= 50*(top_d-c)
+            
+            if layout.H - len(s_d) > max_pos:
+              ev -= 100000
 
-        if ev > best_eval:
-            best_eval=ev
-            best_dest=dest
+            if ev > best_eval:
+                best_eval=ev
+                best_dest=dest
 
     return best_dest
 
@@ -185,42 +192,69 @@ def reachable_height(layout, i):
     else: 
         return h
 
-
-def SF_move(layout):
+    
+def SF_move(layout, pos=0):
     s_o = None
     s_d = None
     min_dif = 10000
+    actions = []
     for i in range(len(layout.stacks)):
         if(layout.is_sorted_stack(i) and len(layout.stacks[i]) < layout.H):
             top = gvalue(layout.stacks[i])
             for k in range(len(layout.stacks)):
                 if k!=i and not layout.is_sorted_stack(k):
-                    if layout.stacks[k][-1] <= top and (top - layout.stacks[k][-1]) < min_dif:
-                        min_dif = top - layout.stacks[k][-1]
-                        s_d=i; s_o = k
+                    if layout.stacks[k][-1] <= top :
+                        actions.append( (top - layout.stacks[k][-1], k, i))
+    actions.sort()
+    if len(actions)>pos: 
+        min_df, s_o, s_d = actions[pos]
+        layout.move(s_o,s_d)
+        return True, len(actions)
+    return False, len(actions)
+
+def SF_move_d(layout, s_d):
+    s_o = None
+    min_dif = 10000
+    if(layout.is_sorted_stack(s_d) and len(layout.stacks[s_d]) < layout.H):
+        top = gvalue(layout.stacks[s_d])
+        for k in range(len(layout.stacks)):
+            if k!=s_d and not layout.is_sorted_stack(k):
+                if layout.stacks[k][-1] <= top and (top - layout.stacks[k][-1]) < min_dif:
+                    min_dif = top - layout.stacks[k][-1]
+                    s_o = k
     if s_o != None: 
         layout.move(s_o,s_d)
         return True
     return False
 
-def SD_move(layout):
+
+def SD_move(layout, pos=0):
     best_ev = 0
+    actions = []
     for i in range(len(layout.stacks)):
         prom = sum(layout.stacks[i]) / len(layout.stacks[i]) 
         ev = 10000 - 100*len(layout.stacks[i]) - prom
+        
+        actions.append( (-ev, i))
         if ev > best_ev:
             best_ev = ev
             s_o = i
-            
+    actions.sort()
+    
+    if len(actions)<=pos : return False
     while len(layout.stacks[s_o])>0:
+        ev, s_o = actions[pos]
         s_d = select_destination_stack(layout,s_o)
         layout.move(s_o,s_d)
-        if reachable_height(layout,s_o)==layout.H: return
+        if reachable_height(layout,s_o)==layout.H: return True, len(actions)
+        
+    return True, len(actions)
+
 
 
 
 def greedy_solve(layout):
     while layout.unsorted_stacks>0:
-        if not SF_move(layout):
+        if not SF_move(layout)[0]:
             SD_move(layout)
     return layout.steps

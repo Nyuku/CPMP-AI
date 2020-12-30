@@ -8,7 +8,7 @@ import os
 from containeryard.yard import Yard
 from containeryard.StackedYard import Layout, greedy_solve, read_file, select_destination_stack
 from Constants import FILE_PATH
-from containeryard.Generation import RandomMovementGeneration
+from containeryard.Generation import random_generator
 
 import gym
 from gym import error, spaces, utils
@@ -27,11 +27,14 @@ class ContainerYard(gym.Env):
     #x: int
     #y: int
 
-    def __init__(self, showDebug = False, x=20, y=5):
+    episodes=0
+    
+    def __init__(self, showDebug = False, x=20, y=5, max_containers=60):
         super(ContainerYard, self).__init__()
 
         self.x = x
         self.y = y
+        self.max_containers = max_containers
 
         ### START OF CONFIG ###
         self.showDebug = showDebug
@@ -84,6 +87,7 @@ class ContainerYard(gym.Env):
             Layout(layoutState, self.state.y), 
             action
         )
+        if dest==None: return None
         return self.state.moveStack(action, dest)
 
 
@@ -99,16 +103,19 @@ class ContainerYard(gym.Env):
 
         self.current_step += 1
 
-        formula_reward = np.exp(-(self.current_step + self.greedy_steps))
-        reward = formula_reward - self.last_reward
+        formula_reward = np.power(0.95, self.current_step + self.greedy_steps)
+        reward = 100*(formula_reward - self.last_reward)
         self.last_reward = formula_reward
+        
+        
+        #if self.state.isDone(): reward=1
 
         done = (self.state.isDone() or self.current_step >= self.max_step)
 
-        if ret is False:
+        if ret == None:
             #Could not make action, so we punish it.
-            reward = -1
-            #done = True
+            reward = -10
+            done = True
     
 
         ##################
@@ -135,14 +142,15 @@ class ContainerYard(gym.Env):
 
     def reset(self):
         #Resetting
+        ContainerYard.episodes += 1
         self.current_step = 0
-
-
-        self.state, self.layout, self.max_step = RandomMovementGeneration(x=self.x, y=self.y, difficulty=4)
+        self.greedy_steps  = 0
+        #while self.greedy_steps  > 6 + self.episodes/10000.0  or self.greedy_steps <= 3  :
+        self.state, self.layout, self.max_step = random_generator(x=self.x, y=self.y, max_containers=self.max_containers)
+        self.greedy_steps  = greedy_solve( Layout(self.state.asLayout(), self.state.y) )
+        self.last_reward = np.power(0.95, self.greedy_steps)
 
         return self._next_observation()
 
     def render(self, mode=None, test=False):
         self.state.render()
-
-
