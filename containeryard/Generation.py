@@ -7,28 +7,19 @@ from containeryard.yard import Yard
 from containeryard.StackedYard import Layout
 from containeryard.StackedYard import greedy_solve
 
-def random_generator(x=5, y=5, max_containers=15):
-    #max_containers = (x*(y-2)) #60
+def random_generator(x=5, y=5, n_containers=15):
     max_priority=20
 
     # This generator starts from a solved one and makes random movements.
-    yard = np.zeros(shape=(x,y))
+    yard = np.zeros(shape=(x,y), dtype=int)
+    n_yards = np.zeros(x, dtype=int);
 
-    count = 0
-    for i in range(x):
-        
-        stack = []
-        height = min(rand.randint(0,y),max_containers-count)
-        
-        for j in range(height):
-            num = rand.randint(1,max_priority)
-            stack.append(num)
-            count +=1
-        
-        j=0
-        for s in stack:
-            yard[i][j] = s
-            j +=1
+    for k in range(n_containers):
+        i = None
+        while i==None or n_yards[i] == 5:
+            i = rand.randint(0,x-1) #se selecciona stack
+        yard[i][n_yards[i]] = rand.randint(1,max_priority)
+        n_yards[i] +=1
 
     state = Yard(yard)
 
@@ -37,6 +28,7 @@ def random_generator(x=5, y=5, max_containers=15):
     max_step = greedy_solve(layout)
 
     return state, layout, max_step 
+
 
 def RandomGeneration():
     rand.seed(time.time())
