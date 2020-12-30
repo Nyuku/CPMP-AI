@@ -87,7 +87,9 @@ class ContainerYard(gym.Env):
             Layout(layoutState, self.state.y), 
             action
         )
+
         if dest==None: return None
+
         return self.state.moveStack(action, dest)
 
 
@@ -149,7 +151,7 @@ class ContainerYard(gym.Env):
         self.state, self.layout, self.max_step = random_generator(x=self.x, y=self.y, max_containers=self.max_containers)
         self.greedy_steps  = greedy_solve( Layout(self.state.asLayout(), self.state.y) )
         self.last_reward = np.power(0.95, self.greedy_steps)
-
+        
         return self._next_observation()
 
     def render(self, mode=None, test=False):
