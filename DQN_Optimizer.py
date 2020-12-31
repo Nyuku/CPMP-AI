@@ -10,13 +10,17 @@ from stable_baselines import DQN
 
 from containeryard.containeryard import ContainerYard
 
-timesteps = 10000000
+timesteps = 5000000
 
-env = DummyVecEnv([lambda: ContainerYard(showDebug = True)])
+x=5
+y=5
+m_c=10
+
+env = DummyVecEnv([lambda: ContainerYard(showDebug = True, x=x, y=y, max_containers=m_c)])
 model = DQN(MlpPolicy, env, verbose=1)
 
 model.learn(total_timesteps=timesteps)
-model.save("TrainingTest-" + str(timesteps))
+model.save("TrainingTest-{0}-x{1}y{2}-mc{3}".format(timesteps,x,y,m_c))
 
 #del model
 #del env
@@ -30,12 +34,13 @@ totalUseless = 0
 totalSame = 0
 totalBG = 0
 totalSteps = 0
+totalRewSum = 0.0
 
 bestSolution = -1
 solvedDifferences = 0
 
 
-for i_episode in range(5):
+for i_episode in range(1000):
     obs = env.reset()
     t = 0
 
@@ -55,14 +60,14 @@ for i_episode in range(5):
             print("=== DEBUG INFO ===")
             print("Step: {0}/{1}".format(info[0]["current_step"],info[0]["max_step"]))
             print("Reward: ", info[0]["reward"])
+
+            totalRewSum += float(info[0]["reward"])
+
             print("==== ACT INFO ====")
             print("Action @ ", info[0]['current_action'])
             print("Could make Action?: ", info[0]['action_status'])
             print("COMPLETED?: ", info[0]['sorted'])
             print("==================")
-
-            if info[0]['stackSize'] == 0:
-                break
 
             #Total Steps
             totalSteps +=1
@@ -74,10 +79,10 @@ for i_episode in range(5):
             if info[0]["max_step"]-info[0]["current_step"] > bestSolution:
                 bestSolution = info[0]["max_step"]-info[0]["current_step"]
 
-            if info[0]['sorted'] == "True":
+            if info[0]['sorted'] == "True" or info[0]['sorted'] == " True":
                 finished += 1
                 #Le suma al total de diferencias de resueltos.
-                solvedDifferences = bestSolution = info[0]["max_step"]-info[0]["current_step"]
+                solvedDifferences += info[0]["max_step"]-info[0]["current_step"]
 
             total +=1
             break
@@ -85,6 +90,8 @@ for i_episode in range(5):
 if info is not None:
     print("== FINISH DATA ==")
     print("Acc : ", finished, "/1000", "(", (finished/1000)*100,")%")
+    print("Reward Median: {0}.".format(totalRewSum/1000))
+
     if finished == 0:
         print("NO TESTS WERE FINISHED.")
     else:

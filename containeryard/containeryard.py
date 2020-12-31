@@ -147,11 +147,12 @@ class ContainerYard(gym.Env):
         ContainerYard.episodes += 1
         self.current_step = 0
         self.greedy_steps  = 0
-        #while self.greedy_steps  > 6 + self.episodes/10000.0  or self.greedy_steps <= 3  :
-        self.state, self.layout, self.max_step = random_generator(x=self.x, y=self.y, max_containers=self.max_containers)
-        self.greedy_steps  = greedy_solve( Layout(self.state.asLayout(), self.state.y) )
-        self.last_reward = np.power(0.95, self.greedy_steps)
+        while self.greedy_steps  == 0  :
+            self.state, self.layout, self.max_step = \
+                random_generator(x=self.x, y=self.y, n_containers=self.max_containers)
+            self.greedy_steps  = greedy_solve( Layout(self.state.asLayout(), self.state.y) )
         
+        self.last_reward = np.power(0.95, self.greedy_steps)
         return self._next_observation()
 
     def render(self, mode=None, test=False):
